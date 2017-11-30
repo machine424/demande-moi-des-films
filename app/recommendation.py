@@ -57,18 +57,22 @@ class Recommendation:
     # Display the recommendation for a user
     def make_recommendation(self, user):
         similarities = self.compute_all_similarities(user)
+        users_proches = [c[0] for c in similarities[0:5]]
+        films = dict()
+        for user in users_proches:
+            for film_user in user.good_ratings:
+                if film_user not in films:
+                    films[film_user] = 0
+                films[film_user] += 1
 
-        max_simi = similarities[0]
-        for simi in similarities[1:]:
-            if simi[1] > max_simi[1]:
-                max_simi = simi
-        print(len(max_simi[0].good_ratings))
-        films = [f for f in max_simi[0].good_ratings if f not in user.good_ratings]
+        films = sorted(films, key=films.get)
+
+
+        films = [f.title for f in films if f not in user.good_ratings]
 
         if len(films) > 0:
-            movie = choice(films).title
-            return "Vos recommandations : " + ", ".join([movie])
-        return "Desolé, on a rien trouvé pour toi : "
+            return "Vos recommandations : " + "; ".join(films[0:3])
+        return "Desolé, on a rien trouvé pour toi :'( "
 
     # Compute the similarity between two users
     @staticmethod
@@ -94,6 +98,7 @@ class Recommendation:
         similarities = []
         for user2 in self.test_users.values():
             similarities.append((user2, Recommendation.get_similarity(user, user2)))
+        similarities.sort(key = lambda tup:  tup[1], reverse = True)
         return similarities
 
     @staticmethod
