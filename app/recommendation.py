@@ -79,7 +79,7 @@ class Recommendation:
 
     @staticmethod
     def get_user_norm(user):
-        return 1
+        return len(user.good_ratings) + len(user.bad_ratings) + len(user.neutral_ratings)
 
     # Return a vector with the normalised ratings of a user
     @staticmethod
